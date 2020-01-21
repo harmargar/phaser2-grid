@@ -1,0 +1,52 @@
+{
+  "name": "@koreez/phaser2-grid",
+  "version": "1.0.0",
+  "description": "Phaser2 Grid System",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "start": "npx parcel src/__examples__/index.html",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build --scripts-prepend-node-path",
+    "prepublishOnly": "npm test && npm run lint"
+  },
+  "repository": {
+    "url": "git@github.com:koreezgames/phaser2-grid.git"
+  },
+  "keywords": [
+    "Phaser2",
+    "Phaser",
+    "grid"
+  ],
+  "author": "Koreez LLC",
+  "license": "MIT",
+  "homepage": "https://github.com/koreezgames/phaser2-grid#readme",
+  "devDependencies": {
+    "@types/expect-puppeteer": "^3.3.3",
+    "@types/jest": "^24.0.25",
+    "@types/jest-environment-puppeteer": "^4.3.1",
+    "@types/node": "^12.12.24",
+    "@types/puppeteer": "^2.0.0",
+    "codecov": "^3.6.1",
+    "jest": "^24.9.0",
+    "jest-canvas-mock": "^2.2.0",
+    "jest-puppeteer": "^4.4.0",
+    "parcel-bundler": "^1.12.4",
+    "phaser-ce": "^2.9.4",
+    "prettier": "^1.19.1",
+    "puppeteer": "^2.0.0",
+    "ts-jest": "^24.3.0",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.7.4"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "dependencies": {
+    "@koreez/grid-core": "github:koreezgames/grid-core#master"
+  }
+}
