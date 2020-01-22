@@ -1,10 +1,14 @@
+/// <reference path="../../node_modules/phaser-ce/typescript/phaser.comments.d.ts" />
 // tslint:disable: ordered-imports
 import './phaser';
 import { Phaser2Grid } from '../com/koreez/phaser2grid/Phaser2Grid';
 
+class TestGrid extends Phaser2Grid {}
+
 test('Phaser2 Grid', done => {
   function create(this: Phaser.State) {
-    this.add.existing(new Phaser2Grid(this.game));
+    const grid = new TestGrid(this.game);
+    this.add.existing(grid);
     done();
   }
   // tslint:disable-next-line: no-unused-expression
