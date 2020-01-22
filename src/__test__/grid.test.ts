@@ -1,4 +1,5 @@
-/// <reference path="../../node_modules/phaser-ce/typescript/phaser.comments.d.ts" />
+// tslint:disable-next-line: no-reference
+/// <reference path="../../node_modules/phaser-ce/typescript/phaser.d.ts" />
 // tslint:disable: ordered-imports
 import './phaser';
 import { Phaser2Grid } from '../com/koreez/phaser2grid/Phaser2Grid';
