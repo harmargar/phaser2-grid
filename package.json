@@ -47,6 +47,6 @@
     "lib/**/*"
   ],
   "dependencies": {
-    "@koreez/grid-core": "github:koreezgames/grid-core#master"
+    "@koreez/grid-core": "^1.0.0-alpha01"
   }
 }
