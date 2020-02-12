@@ -144,7 +144,8 @@ export class Phaser2Grid extends Phaser.Group {
     if (config.debug) {
       if (this.debugger === undefined) {
         this.debugger = new Debugger(this.game);
-        this.debugger.defaultStrokeColor = config.debug.color || 0xffffff;
+        this.debugger.defaultStrokeColor = config.debug.color !== undefined ? config.debug.color : 0xffffff;
+
         this.add(this.debugger);
       } else {
         this.debugger.clear();
