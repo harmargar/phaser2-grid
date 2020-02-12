@@ -92,8 +92,8 @@ export class Phaser2Grid extends Phaser.Group {
 
       // SCALE
       cDimensions = {
-        height: (cb.height / child.worldScale.y) * child.scale.y,
-        width: (cb.width / child.worldScale.x) * child.scale.x,
+        height: cb.height / child.worldScale.y,
+        width: cb.width / child.worldScale.x,
       };
 
       const scale = fit(cDimensions, cellDimensions, merged.scale);
