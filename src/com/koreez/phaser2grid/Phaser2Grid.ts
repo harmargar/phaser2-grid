@@ -6,6 +6,22 @@ export class Phaser2Grid extends Phaser.Group {
   private debugger!: Debugger;
 
   /**
+   * Adds a child to the container.
+   *
+   * @method addChild
+   * @param child {DisplayObject} The DisplayObject to add to the container
+   * @return {DisplayObject} The child that was added.
+   */
+  public addChild(child: PIXI.DisplayObject): PIXI.DisplayObject {
+    const c = super.addChild(child);
+    if (this.debugger && child !== this.debugger) {
+      this.bringToTop(this.debugger);
+    }
+
+    return c;
+  }
+
+  /**
    * @description Creates Grid object based on input configuration object
    * @param config Input configuration object.
    * @returns {void}
@@ -60,8 +76,8 @@ export class Phaser2Grid extends Phaser.Group {
       config = config || {};
       config.scale = CellScale.None;
       config.align = CellAlign.LeftTop;
-      child.grid.config.bounds = () => cell.contentArea;
-      child.rebuild();
+      (child as Phaser2Grid).grid.config.bounds = () => cell.contentArea;
+      (child as Phaser2Grid).rebuild();
     } else {
       const cb = child.getBounds();
       const ct = child.worldTransform;
