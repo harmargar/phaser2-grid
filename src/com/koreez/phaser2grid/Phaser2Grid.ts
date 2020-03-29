@@ -2,8 +2,8 @@ import { align, Cell, CellAlign, CellScale, fit, ICellConfig, IContentConfig, IG
 import { Debugger, IPhaser2Child, IPhaser2Content } from './Types';
 
 export class Phaser2Grid extends Phaser.Group {
-  private grid!: Cell<IGridConfig>;
-  private debugger!: Debugger;
+  protected grid!: Cell<IGridConfig>;
+  private _debugger!: Debugger;
 
   /**
    * Adds a child to the container.
@@ -14,8 +14,8 @@ export class Phaser2Grid extends Phaser.Group {
    */
   public addChild(child: PIXI.DisplayObject): PIXI.DisplayObject {
     const c = super.addChild(child);
-    if (this.debugger && child !== this.debugger) {
-      this.bringToTop(this.debugger);
+    if (this._debugger && child !== this._debugger) {
+      this.bringToTop(this._debugger);
     }
 
     return c;
@@ -73,6 +73,8 @@ export class Phaser2Grid extends Phaser.Group {
     child.updateTransform();
 
     if (child instanceof Phaser2Grid) {
+      child.scale.set(1);
+
       config = config || {};
       config.scale = CellScale.None;
       config.align = CellAlign.LeftTop;
@@ -113,11 +115,11 @@ export class Phaser2Grid extends Phaser.Group {
 
       // debugs content area considered paddings
       if (config && config.debug) {
-        const { color = this.debugger.defaultStrokeColor } = config.debug;
+        const { color = this._debugger.defaultStrokeColor } = config.debug;
         const { x, y, width, height } = merged.area;
-        this.debugger.lineStyle(5, color, 1);
-        this.debugger.drawRect(x, y, width, height);
-        this.bringToTop(this.debugger);
+        this._debugger.lineStyle(5, color, 1);
+        this._debugger.drawRect(x, y, width, height);
+        this.bringToTop(this._debugger);
       }
     }
 
@@ -142,13 +144,13 @@ export class Phaser2Grid extends Phaser.Group {
     this.grid = new Cell(config);
 
     if (config.debug) {
-      if (this.debugger === undefined) {
-        this.debugger = new Debugger(this.game);
-        this.debugger.defaultStrokeColor = config.debug.color !== undefined ? config.debug.color : 0xffffff;
+      if (this._debugger === undefined) {
+        this._debugger = new Debugger(this.game);
+        this._debugger.defaultStrokeColor = config.debug.color !== undefined ? config.debug.color : 0xffffff;
 
-        this.add(this.debugger);
+        this.add(this._debugger);
       } else {
-        this.debugger.clear();
+        this._debugger.clear();
       }
       this._debug(this.grid);
     }
@@ -157,12 +159,12 @@ export class Phaser2Grid extends Phaser.Group {
   private _debug(cell: Cell<ICellConfig>, lineWidth: number = 10): void {
     const { x: bx, y: by, width: bw, height: bh } = cell.bounds;
     const { x: px, y: py, width: pw, height: ph } = cell.contentArea;
-    const { defaultStrokeColor } = this.debugger;
+    const { defaultStrokeColor } = this._debugger;
 
-    this.debugger.lineStyle(lineWidth * 0.8, defaultStrokeColor, 1);
-    this.debugger.drawRect(px, py, pw, ph);
-    this.debugger.lineStyle(lineWidth, defaultStrokeColor, 1);
-    this.debugger.drawRect(bx, by, bw, bh);
+    this._debugger.lineStyle(lineWidth * 0.8, defaultStrokeColor, 1);
+    this._debugger.drawRect(px, py, pw, ph);
+    this._debugger.lineStyle(lineWidth, defaultStrokeColor, 1);
+    this._debugger.drawRect(bx, by, bw, bh);
 
     cell.cells.forEach((el: Cell<ICellConfig>) => this._debug(el, lineWidth * 0.7));
   }

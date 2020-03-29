@@ -1,4 +1,3 @@
-import { IMGKeys, IMGKeyValues } from '../assets';
 import { MainView } from './MainView';
 
 class Game extends Phaser.Game {
@@ -12,15 +11,14 @@ class ExampleState extends Phaser.State {
   public init() {
     this.stage.backgroundColor = '#cdcdcd';
     this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
-    // console.log('State', this.key);
-    // console.log('IMG Key Values');
-    // console.table(IMGKeyValues.default);
-    // console.log('IMG Keys');
-    // console.table(IMGKeys);
   }
 
   public preload() {
-    this.load.images(Object.keys(IMGKeys), Object.values(IMGKeyValues.default));
+    this.load.image('chick', 'assets/chick.png');
+    this.load.image('duck', 'assets/duck.png');
+    this.load.image('owl', 'assets/owl.png');
+    this.load.image('parrot', 'assets/parrot.png');
+    this.load.image('pixel', 'assets/pixel.png');
   }
 
   public create() {
