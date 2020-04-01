@@ -124,7 +124,11 @@ export class MainView extends Phaser2Grid {
 class ChildView extends Phaser2Grid {
   constructor(game: Phaser.Game) {
     super(game);
-    this.build(getChildViewGridConfig());
+    this.build(this.getGridConfig());
+  }
+
+  public getGridConfig() {
+    return getChildViewGridConfig();
   }
 
   public build(config: IGridConfig): void {

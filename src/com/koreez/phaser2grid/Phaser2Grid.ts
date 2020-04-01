@@ -40,7 +40,8 @@ export class Phaser2Grid extends Phaser.Group {
     const cells = this.grid.getCells();
 
     // creates new grid
-    this._internalBuild(config || (this.grid.config as IGridConfig));
+    // this._internalBuild(config || (this.grid.config as IGridConfig));
+    this._internalBuild(config || this.grid.config);
 
     // sets old cells contents in new grid cells
     cells.forEach((cell: Cell<ICellConfig>) => {
@@ -72,58 +73,8 @@ export class Phaser2Grid extends Phaser.Group {
     child.scale.set(this.scale.x, this.scale.y);
     child.updateTransform();
 
-    if (child instanceof Phaser2Grid) {
-      child.scale.set(1);
-
-      config = config || {};
-      config.scale = CellScale.None;
-      config.align = CellAlign.LeftTop;
-      (child as Phaser2Grid).grid.config.bounds = () => cell.contentArea;
-      (child as Phaser2Grid).rebuild();
-    } else {
-      const cb = child.getBounds();
-      const ct = child.worldTransform;
-
-      // child.getLocalBounds();
-
-      let cDimensions = { width: 1, height: 1 };
-
-      // MERGE
-      const merged = cell.mergeContentConfig(config);
-      const cellDimensions = { width: merged.area.width, height: merged.area.height };
-
-      // SCALE
-      cDimensions = {
-        height: cb.height / child.worldScale.y,
-        width: cb.width / child.worldScale.x,
-      };
-
-      const scale = fit(cDimensions, cellDimensions, merged.scale);
-      child.scale.set(scale.x, scale.y);
-
-      // POSITION
-      cDimensions = {
-        height: (cb.height / child.worldScale.y) * child.scale.y,
-        width: (cb.width / child.worldScale.x) * child.scale.x,
-      };
-
-      const pos = align(cDimensions, merged.area, merged.align);
-      child.position.set(pos.x + merged.offset.x, pos.y + merged.offset.y);
-
-      child.x -= ((cb.x - child.worldPosition.x) / child.worldScale.x) * child.scale.x;
-      child.y -= ((cb.y - child.worldPosition.y) / child.worldScale.y) * child.scale.y;
-
-      // debugs content area considered paddings
-      if (config && config.debug) {
-        const { color = this._debugger.defaultStrokeColor } = config.debug;
-        const { x, y, width, height } = merged.area;
-        this._debugger.lineStyle(5, color, 1);
-        this._debugger.drawRect(x, y, width, height);
-        this.bringToTop(this._debugger);
-      }
-    }
-
-    cell.contents.push({ child, config });
+    config = config || {};
+    child instanceof Phaser2Grid ? this._setInnerGrid(child, config, cell) : this._setChild(child, config, cell);
 
     return this;
   }
@@ -138,6 +89,66 @@ export class Phaser2Grid extends Phaser.Group {
 
   protected getCellContentAreaByName(name: string) {
     return this.getCellByName(name)?.contentArea;
+  }
+
+  private _setChild(child: IPhaser2Child, config: IContentConfig, cell: Cell<ICellConfig>): this {
+    const cb = child.getBounds();
+
+    let cDimensions = { width: 1, height: 1 };
+
+    // MERGE
+    const merged = cell.mergeContentConfig(config);
+    const cellDimensions = { width: merged.area.width, height: merged.area.height };
+
+    // SCALE
+    cDimensions = {
+      height: cb.height / child.worldScale.y,
+      width: cb.width / child.worldScale.x,
+    };
+
+    const scale = fit(cDimensions, cellDimensions, merged.scale);
+    child.scale.set(scale.x, scale.y);
+
+    // POSITION
+    cDimensions = {
+      height: (cb.height / child.worldScale.y) * child.scale.y,
+      width: (cb.width / child.worldScale.x) * child.scale.x,
+    };
+
+    const pos = align(cDimensions, merged.area, merged.align);
+    child.position.set(pos.x + merged.offset.x, pos.y + merged.offset.y);
+
+    child.x -= ((cb.x - child.worldPosition.x) / child.worldScale.x) * child.scale.x;
+    child.y -= ((cb.y - child.worldPosition.y) / child.worldScale.y) * child.scale.y;
+
+    // debugs content area considered paddings
+    if (config && config.debug) {
+      const { color = this._debugger.defaultStrokeColor } = config.debug;
+      const { x, y, width, height } = merged.area;
+      this._debugger.lineStyle(5, color, 1);
+      this._debugger.drawRect(x, y, width, height);
+      this.bringToTop(this._debugger);
+    }
+
+    cell.contents.push({ child, config });
+
+    return this;
+  }
+
+  private _setInnerGrid(child: Phaser2Grid, config: IContentConfig, cell: Cell<ICellConfig>): this {
+    child.scale.set(1);
+
+    // @ts-ignore
+    const gridConfig = child.getGridConfig();
+    gridConfig.bounds = () => cell.contentArea;
+    gridConfig.scale = CellScale.None;
+    gridConfig.align = CellAlign.LeftTop;
+
+    // @ts-ignore
+    child.rebuild(gridConfig);
+    cell.contents.push({ child, config });
+
+    return this;
   }
 
   private _internalBuild(config: IGridConfig): void {
