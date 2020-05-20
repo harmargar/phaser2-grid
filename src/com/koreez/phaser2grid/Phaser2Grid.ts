@@ -82,6 +82,7 @@ export class Phaser2Grid extends Phaser.Group {
   protected destroyChild(child: IPhaser2Child, ...destroyArgs: any[]) {
     child.destroy.call(child, ...destroyArgs)
     
+    // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < this.grid.cells.length; i += 1) {
       const cell = this.grid.cells[i]
       
