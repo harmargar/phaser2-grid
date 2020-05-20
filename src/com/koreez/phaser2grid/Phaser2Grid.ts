@@ -79,6 +79,23 @@ export class Phaser2Grid extends Phaser.Group {
     return this;
   }
 
+  protected destroyChild(child: IPhaser2Child, ...destroyArgs: any[]) {
+    child.destroy.call(child, ...destroyArgs)
+    
+    for (let i = 0; i < this.grid.cells.length; i += 1) {
+      const cell = this.grid.cells[i]
+      
+      for (let j = 0; j < cell.contents.length; j += 1) {
+        const content = cell.contents[j]
+
+        if (content.child === child) {
+          cell.contents.splice(j, 1)
+          return
+        }
+      }
+    }
+  }
+
   protected getCellByName(name: string) {
     return this.grid.getCellByName(name);
   }
