@@ -70,7 +70,6 @@ export class Phaser2Grid extends Phaser.Group {
     this.add(child);
     // resets child's position and scale
     child.position.set(0);
-    child.scale.set(this.scale.x, this.scale.y);
     child.updateTransform();
 
     config = config || {};
@@ -80,18 +79,18 @@ export class Phaser2Grid extends Phaser.Group {
   }
 
   protected destroyChild(child: IPhaser2Child, ...destroyArgs: any[]) {
-    child.destroy.call(child, ...destroyArgs)
-    
+    child.destroy.call(child, ...destroyArgs);
+
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < this.grid.cells.length; i += 1) {
-      const cell = this.grid.cells[i]
-      
+      const cell = this.grid.cells[i];
+
       for (let j = 0; j < cell.contents.length; j += 1) {
-        const content = cell.contents[j]
+        const content = cell.contents[j];
 
         if (content.child === child) {
-          cell.contents.splice(j, 1)
-          return
+          cell.contents.splice(j, 1);
+          return;
         }
       }
     }
@@ -119,13 +118,15 @@ export class Phaser2Grid extends Phaser.Group {
     const cellDimensions = { width: merged.area.width, height: merged.area.height };
 
     // SCALE
-    cDimensions = {
-      height: cb.height / child.worldScale.y,
-      width: cb.width / child.worldScale.x,
-    };
+    if (merged.scale !== CellScale.None) {
+      cDimensions = {
+        height: cb.height / child.worldScale.y,
+        width: cb.width / child.worldScale.x,
+      };
 
-    const scale = fit(cDimensions, cellDimensions, merged.scale);
-    child.scale.set(scale.x, scale.y);
+      const scale = fit(cDimensions, cellDimensions, merged.scale);
+      child.scale.set(scale.x, scale.y);
+    }
 
     // POSITION
     cDimensions = {
