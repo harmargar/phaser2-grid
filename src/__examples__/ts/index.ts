@@ -31,7 +31,6 @@ document.onreadystatechange = () => {
     const game = new Game();
     game.state.add('ExampleState', ExampleState, true);
 
-    // @ts-ignore
     window.game = game;
   }
 };

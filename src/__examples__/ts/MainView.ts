@@ -1,122 +1,63 @@
-import { CellAlign, CellScale, IGridConfig } from '@koreez/grid-core';
+import { IGridConfig } from '@koreez/grid-core';
 import { Phaser2Grid } from '../../com/koreez/phaser2grid/Phaser2Grid';
-
-function getCanvasBounds() {
-  // @ts-ignore
-  return { x: 0, y: 0, width: window.game.scale.width, height: window.game.scale.height };
-}
-
-function getMainViewGridConfig(): IGridConfig {
-  // @ts-ignore
-  return window.game.scale.isLandscape ? getMainViewLandscapeGridConfig() : getMainViewPortraitGridConfig();
-}
-
-function getMainViewPortraitGridConfig(): IGridConfig {
-  return {
-    bounds: getCanvasBounds,
-    cells: [
-      {
-        bounds: { x: 0, y: 0, width: 0.5, height: 1 },
-        name: 'main_1',
-        padding: 0.1,
-      },
-      {
-        bounds: { x: 0.5, y: 0 },
-        name: 'main_2',
-      },
-    ],
-    debug: { color: 0xff0000 },
-    name: 'main',
-  };
-}
-
-function getMainViewLandscapeGridConfig(): IGridConfig {
-  return {
-    bounds: getCanvasBounds,
-    cells: [
-      {
-        bounds: { x: 0, y: 0, width: 0.4, height: 1 },
-        name: 'main_1',
-      },
-      {
-        bounds: { x: 0.4, y: 0, width: 0.3, height: 1 },
-        name: 'main_2',
-      },
-      {
-        bounds: { x: 0.7, y: 0, width: 0.3, height: 1 },
-        name: 'main_3',
-      },
-    ],
-    debug: { color: 0xff0000 },
-    name: 'main',
-  };
-}
-
-function getChildViewGridConfig(): IGridConfig {
-  return {
-    bounds: getCanvasBounds,
-    cells: [
-      {
-        bounds: { x: 0, y: 0, height: 0.25 },
-        name: 'ui_1',
-      },
-      {
-        bounds: { x: 0, y: 0.25, height: 0.25 },
-        name: 'ui_2',
-      },
-      {
-        bounds: { x: 0, y: 0.5, height: 0.25 },
-        name: 'ui_3',
-      },
-      {
-        bounds: { x: 0 },
-        name: 'ui_4',
-        padding: 0.1,
-      },
-    ],
-    debug: { color: 0x626262 },
-    name: 'ui',
-  };
-}
+import { getChildViewGridConfig, getMainViewGridConfig } from './grid-configs';
 
 export class MainView extends Phaser2Grid {
+  private _duckGroup!: Phaser.Group;
+  private _childGrid!: Phaser2Grid;
+
   constructor(game: Phaser.Game) {
     super(game);
-    this.build(getMainViewGridConfig());
+
+    this.build(this.getGridConfig());
+  }
+
+  public getGridConfig() {
+    return getMainViewGridConfig();
   }
 
   public build(config: IGridConfig): void {
     super.build(config);
 
-    const group = this.game.make.group();
-    const owl = this.game.add.sprite(0, 0, 'owl');
-    const duck = this.game.add.sprite(200, 0, 'duck');
+    this._buildGroup();
+    this._buildChildGrid();
+    this._setResizeListener();
 
-    owl.anchor.set(-2, 2);
-    duck.anchor.set(2, -2);
-
-    group.add(owl);
-    group.add(duck);
-
-    this.setChild('main_1', group);
-
-    const childView = new ChildView(this.game);
-    this.setChild('main_2', childView);
-
+    // TEST;
     setInterval(() => {
-      group.rotation += 0.005;
+      this._duckGroup.rotation += 0.01;
+
       this.rebuild();
+    }, 10);
+  }
+
+  _buildGroup() {
+    const group = this.game.make.group();
+    const duck1 = this.game.add.sprite(0, 0, 'duck');
+    const duck2 = this.game.add.sprite(200, 0, 'duck');
+
+    duck1.anchor.set(-2, 2);
+    duck2.anchor.set(2, -2);
+
+    group.add(duck1);
+    group.add(duck2);
+
+    this.setChild('main_1', (this._duckGroup = group));
+  }
+
+  _buildChildGrid() {
+    const childView = new ChildView(this.game);
+    this.setChild('main_2', (this._childGrid = childView));
+  }
+
+  _setResizeListener() {
+    this.game.scale.setResizeCallback(this._onResize, this);
+  }
+
+  _onResize() {
+    setTimeout(() => {
+      this.rebuild(this.getGridConfig());
     }, 0);
-
-    this.game.scale.onOrientationChange.add(() => {
-      this.rebuild(getMainViewGridConfig());
-    });
-
-    this.game.scale.setResizeCallback(() => {
-      setTimeout(() => {
-        this.rebuild();
-      });
-    }, this);
   }
 }
 
@@ -124,6 +65,7 @@ export class MainView extends Phaser2Grid {
 class ChildView extends Phaser2Grid {
   constructor(game: Phaser.Game) {
     super(game);
+
     this.build(this.getGridConfig());
   }
 
@@ -136,32 +78,30 @@ class ChildView extends Phaser2Grid {
 
     const owl = this.game.make.sprite(0, 0, 'owl');
     owl.anchor.set(0.5);
+
+    const parrotGroup = this.game.make.group();
     const parrot1 = this.game.make.sprite(200, 0, 'parrot');
     const parrot2 = this.game.make.sprite(-200, 0, 'parrot');
+
+    parrotGroup.add(parrot1);
+    parrotGroup.add(parrot2);
+
     const chick = this.game.make.sprite(0, 0, 'chick');
     const pixel = this.game.make.sprite(0, 0, 'pixel');
 
-    const parrotCont = this.game.make.group();
-    parrotCont.add(parrot1);
-    parrotCont.add(parrot2);
+    this.setChild('ui_1', owl);
+    this.setChild('ui_2', parrotGroup);
+    this.setChild('ui_3', chick);
+    this.setChild('ui_4', pixel);
 
-    this.setChild('ui_1', owl, { align: CellAlign.LeftTop });
-    this.setChild('ui_2', parrotCont);
-    this.setChild('ui_3', chick, { align: CellAlign.RightBottom });
-    this.setChild('ui_4', pixel, {
-      debug: { color: 0xffffff },
-      padding: 0.2,
-      scale: CellScale.ShowAll,
-    });
-
+    // TEST
     setInterval(() => {
-      owl.rotation += 0.005;
-      parrotCont.rotation += 0.005;
-      pixel.rotation += 0.005;
-      chick.rotation += 0.005;
-      parrot1.rotation -= 0.005;
+      owl.rotation -= 0.01;
+      parrotGroup.rotation += 0.01;
+      chick.rotation += 0.01;
+      pixel.rotation -= 0.01;
 
       this.rebuild();
-    }, 0);
+    }, 10);
   }
 }
