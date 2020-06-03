@@ -1,10 +1,12 @@
 import { align, Cell, CellAlign, CellScale, fit, ICellConfig, IGridConfig } from '@koreez/grid-core';
+import { IDebug } from '@koreez/grid-core/lib/Types';
 import { Debugger, IPhaser2Child, IPhaser2Grid } from './Types';
 
 export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
   public abstract getGridConfig(): IGridConfig;
 
   protected grid!: Cell<IGridConfig, IPhaser2Child | IPhaser2Grid>;
+
   private _debugger!: Debugger;
 
   protected getCellByName(name: string) {
@@ -123,17 +125,11 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
     child.x -= ((childArea.x - child.worldPosition.x) / child.worldScale.x) * child.scale.x;
     child.y -= ((childArea.y - child.worldPosition.y) / child.worldScale.y) * child.scale.y;
 
-    // debugs content area considered paddings
-    const { debug } = this.grid.config;
-    if (debug) {
-      const { color = this._debugger.defaultStrokeColor } = debug;
-      const { x, y, width, height } = cell.area;
-      this._debugger.lineStyle(5, color, 1);
-      this._debugger.drawRect(x, y, width, height);
+    this.addContent(child, cell.name);
+
+    if (this._debugger) {
       this.bringToTop(this._debugger);
     }
-
-    this.addContent(child, cell.name);
 
     return this;
   }
@@ -149,35 +145,52 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
     child.rebuild(gridConfig);
     this.addContent(child, cell.name);
 
+    if (this._debugger) {
+      this.bringToTop(this._debugger);
+    }
+
     return this;
   }
 
   private _internalBuild(config: IGridConfig): void {
     this.grid = new Cell(config);
 
-    if (config.debug) {
-      if (this._debugger === undefined) {
-        this._debugger = new Debugger(this.game);
-        this._debugger.defaultStrokeColor = config.debug.color !== undefined ? config.debug.color : 0xffffff;
-
-        this.add(this._debugger);
-      } else {
-        this._debugger.clear();
-      }
-      this._debug(this.grid);
+    if (this._debugger) {
+      this._debugger.clear();
     }
+
+    this._debug(this.grid);
   }
 
-  private _debug(cell: Cell<ICellConfig | IGridConfig, IPhaser2Child>, lineWidth: number = 10): void {
+  private _debug(
+    cell: Cell<ICellConfig | IGridConfig, IPhaser2Child>,
+    lineWidth: number = 10,
+    parentDebug?: IDebug,
+  ): void {
     const { x: bx, y: by, width: bw, height: bh } = cell.bounds;
     const { x: px, y: py, width: pw, height: ph } = cell.area;
-    const { defaultStrokeColor } = this._debugger;
+    const { debug = parentDebug } = cell.config;
 
-    this._debugger.lineStyle(lineWidth * 0.8, defaultStrokeColor, 1);
-    this._debugger.drawRect(px, py, pw, ph);
-    this._debugger.lineStyle(lineWidth, defaultStrokeColor, 1);
-    this._debugger.drawRect(bx, by, bw, bh);
+    if (debug) {
+      if (this._debugger === undefined) {
+        // Init debugger
+        this._debugger = new Debugger(this.game);
+        this.add(this._debugger);
+      }
 
-    cell.cells.forEach(el => this._debug(el, lineWidth * 0.7));
+      const { color, fill } = debug;
+
+      // Draw content area
+      fill
+        ? this._debugger.drawSolidRect(px, py, pw, ph, lineWidth * 0.8, color)
+        : this._debugger.drawStrokedRect(px, py, pw, ph, lineWidth * 0.8, color);
+
+      // Draw cell bounds
+      fill
+        ? this._debugger.drawSolidRect(bx, by, bw, bh, lineWidth, color)
+        : this._debugger.drawStrokedRect(bx, by, bw, bh, lineWidth, color);
+    }
+
+    cell.cells.forEach(el => this._debug(el, lineWidth * 0.7, debug));
   }
 }
