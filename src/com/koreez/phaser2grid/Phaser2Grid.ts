@@ -1,6 +1,6 @@
 import { align, Cell, CellAlign, CellScale, fit, ICellConfig, IGridConfig } from '@koreez/grid-core';
-import { IDebug } from '@koreez/grid-core/lib/Types';
-import { Debugger, IPhaser2Child, IPhaser2Grid } from './Types';
+import { Debugger } from './Debugger';
+import { IPhaser2Child, IPhaser2Grid } from './Types';
 
 export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
   public abstract getGridConfig(): IGridConfig;
@@ -165,7 +165,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
   private _debug(
     cell: Cell<ICellConfig | IGridConfig, IPhaser2Child>,
     lineWidth: number = 10,
-    parentDebug?: IDebug,
+    parentDebug?: { color?: number; fill?: boolean },
   ): void {
     const { x: bx, y: by, width: bw, height: bh } = cell.bounds;
     const { x: px, y: py, width: pw, height: ph } = cell.area;
@@ -182,13 +182,13 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
 
       // Draw content area
       fill
-        ? this._debugger.drawSolidRect(px, py, pw, ph, lineWidth * 0.8, color)
-        : this._debugger.drawStrokedRect(px, py, pw, ph, lineWidth * 0.8, color);
+        ? this._debugger.fillRect(px, py, pw, ph, lineWidth * 0.8, color)
+        : this._debugger.strokeRect(px, py, pw, ph, lineWidth * 0.8, color);
 
       // Draw cell bounds
       fill
-        ? this._debugger.drawSolidRect(bx, by, bw, bh, lineWidth, color)
-        : this._debugger.drawStrokedRect(bx, by, bw, bh, lineWidth, color);
+        ? this._debugger.fillRect(bx, by, bw, bh, lineWidth, color)
+        : this._debugger.strokeRect(bx, by, bw, bh, lineWidth, color);
     }
 
     cell.cells.forEach(el => this._debug(el, lineWidth * 0.7, debug));

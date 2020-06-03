@@ -1,9 +1,9 @@
 import { CellAlign, CellScale, IGridConfig } from '@koreez/grid-core';
 import { Rect } from '@koreez/grid-core/lib/utils/geom/Rect';
 
-const getCanvasBounds = (): Rect => {
+function getCanvasBounds(): Rect {
   return new Rect(0, 0, window.game.scale.width, window.game.scale.height);
-};
+}
 
 export function getMainViewGridConfig(): IGridConfig {
   return window.game.scale.isLandscape ? getMainViewGridLandscapeConfig() : getMainViewGridPortraitConfig();
@@ -13,7 +13,7 @@ function getMainViewGridPortraitConfig(): IGridConfig {
   return {
     name: 'main',
     bounds: getCanvasBounds,
-    debug: { color: 0x000000 },
+    debug: { color: 0xff0000 },
     cells: [
       {
         name: 'main_1',
@@ -32,7 +32,7 @@ function getMainViewGridLandscapeConfig(): IGridConfig {
   return {
     name: 'main',
     bounds: getCanvasBounds,
-    debug: { color: 0x000000 },
+    debug: { color: 0xff0000 },
     cells: [
       {
         name: 'main_1',
@@ -54,7 +54,7 @@ export function getChildViewGridConfig(): IGridConfig {
   return {
     name: 'ui',
     bounds: getCanvasBounds,
-    debug: { color: 0xffffff },
+    debug: { color: 0x00ff00 },
     cells: [
       {
         name: 'ui_1',
