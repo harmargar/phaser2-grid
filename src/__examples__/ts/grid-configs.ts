@@ -13,7 +13,7 @@ function getMainViewGridPortraitConfig(): IGridConfig {
   return {
     name: 'main',
     bounds: getCanvasBounds,
-    debug: { color: 0xff0000 },
+    debug: { color: 0x000000 },
     cells: [
       {
         name: 'main_1',
@@ -32,7 +32,7 @@ function getMainViewGridLandscapeConfig(): IGridConfig {
   return {
     name: 'main',
     bounds: getCanvasBounds,
-    debug: { color: 0xff0000 },
+    debug: { color: 0x000000 },
     cells: [
       {
         name: 'main_1',
@@ -54,12 +54,14 @@ export function getChildViewGridConfig(): IGridConfig {
   return {
     name: 'ui',
     bounds: getCanvasBounds,
-    debug: { color: 0x626262 },
+    debug: { color: 0xffffff },
     cells: [
       {
         name: 'ui_1',
+        debug: { color: 0xa16639, fill: true },
         bounds: { x: 0, y: 0, height: 0.25 },
         align: CellAlign.LeftTop,
+        padding: 0.1,
       },
       {
         name: 'ui_2',
@@ -72,6 +74,7 @@ export function getChildViewGridConfig(): IGridConfig {
       },
       {
         name: 'ui_4',
+        debug: { color: 0x5bc8a1 },
         bounds: { x: 0 },
         padding: 0.2,
         scale: CellScale.ShowAll,
