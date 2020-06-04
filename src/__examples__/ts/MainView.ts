@@ -1,4 +1,4 @@
-import { IGridConfig } from '@koreez/grid-core';
+import { ICellConfig } from '@koreez/grid-core';
 import { Phaser2Grid } from '../../com/koreez/phaser2grid/Phaser2Grid';
 import { getChildViewGridConfig, getMainViewGridConfig } from './grid-configs';
 
@@ -16,7 +16,7 @@ export class MainView extends Phaser2Grid {
     return getMainViewGridConfig();
   }
 
-  public build(config: IGridConfig): void {
+  public build(config: ICellConfig): void {
     super.build(config);
 
     this._buildGroup();
@@ -73,7 +73,7 @@ class ChildView extends Phaser2Grid {
     return getChildViewGridConfig();
   }
 
-  public build(config: IGridConfig): void {
+  public build(config: ICellConfig): void {
     super.build(config);
 
     const owl = this.game.make.sprite(0, 0, 'owl');

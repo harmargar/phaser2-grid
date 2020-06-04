@@ -1,19 +1,19 @@
-import { CellAlign, CellScale, IGridConfig } from '@koreez/grid-core';
+import { CellAlign, CellScale, ICellConfig } from '@koreez/grid-core';
 import { Rect } from '@koreez/grid-core/lib/utils/geom/Rect';
 
 function getCanvasBounds(): Rect {
   return new Rect(0, 0, window.game.scale.width, window.game.scale.height);
 }
 
-export function getMainViewGridConfig(): IGridConfig {
+export function getMainViewGridConfig(): ICellConfig {
   return window.game.scale.isLandscape ? getMainViewGridLandscapeConfig() : getMainViewGridPortraitConfig();
 }
 
-function getMainViewGridPortraitConfig(): IGridConfig {
+function getMainViewGridPortraitConfig(): ICellConfig {
   return {
     name: 'main',
-    bounds: getCanvasBounds,
-    debug: { color: 0xff0000 },
+    bounds: getCanvasBounds(),
+    debug: { color: 0x00c56a },
     cells: [
       {
         name: 'main_1',
@@ -28,11 +28,11 @@ function getMainViewGridPortraitConfig(): IGridConfig {
   };
 }
 
-function getMainViewGridLandscapeConfig(): IGridConfig {
+function getMainViewGridLandscapeConfig(): ICellConfig {
   return {
     name: 'main',
-    bounds: getCanvasBounds,
-    debug: { color: 0xff0000 },
+    bounds: getCanvasBounds(),
+    debug: { color: 0x00c56a },
     cells: [
       {
         name: 'main_1',
@@ -50,11 +50,10 @@ function getMainViewGridLandscapeConfig(): IGridConfig {
   };
 }
 
-export function getChildViewGridConfig(): IGridConfig {
+export function getChildViewGridConfig(): ICellConfig {
   return {
     name: 'ui',
-    bounds: getCanvasBounds,
-    debug: { color: 0x00ff00 },
+    debug: { color: 0xd62b19 },
     cells: [
       {
         name: 'ui_1',
@@ -74,7 +73,7 @@ export function getChildViewGridConfig(): IGridConfig {
       },
       {
         name: 'ui_4',
-        debug: { color: 0x5bc8a1 },
+        debug: { color: 0xffffff },
         bounds: { x: 0 },
         padding: 0.2,
         scale: CellScale.ShowAll,

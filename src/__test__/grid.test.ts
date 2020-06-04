@@ -1,14 +1,14 @@
 // tslint:disable-next-line: no-reference
 /// <reference path="../../node_modules/phaser-ce/typescript/phaser.d.ts" />
 
-import './phaser';
 import { Phaser2Grid } from '../com/koreez/phaser2grid/Phaser2Grid';
+import './phaser';
 
 class TestGrid extends Phaser2Grid {
   getGridConfig() {
     return {
-      name: '',
-      bounds: () => ({ x: 0, y: 0, width: 0, height: 0 }),
+      name: 'name',
+      bounds: { x: 0, y: 0, width: 0, height: 0 },
     };
   }
 }

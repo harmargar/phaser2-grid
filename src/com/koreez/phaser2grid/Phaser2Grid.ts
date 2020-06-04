@@ -1,19 +1,25 @@
-import { align, Cell, CellAlign, CellScale, fit, ICellConfig, IGridConfig } from '@koreez/grid-core';
-import { Debugger } from './Debugger';
-import { IPhaser2Child, IPhaser2Grid } from './Types';
+import { align, Cell, CellAlign, CellScale, fit, ICellConfig } from '@koreez/grid-core';
+import { Debug } from './Debugger';
+import { ICellChild, IPhaser2Child, IPhaser2Grid } from './Types';
 
 export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
-  public abstract getGridConfig(): IGridConfig;
+  public abstract getGridConfig(): ICellConfig;
 
-  protected grid!: Cell<IGridConfig, IPhaser2Child | IPhaser2Grid>;
+  protected grid!: Cell<ICellChild>;
 
-  private _debugger!: Debugger;
+  private _debug!: Debug;
+
+  constructor(game: Phaser.Game) {
+    super(game);
+
+    this._debug = new Debug(this);
+  }
 
   protected getCellByName(name: string) {
     return this.grid.getCellByName(name);
   }
 
-  protected getCellByContent(content: IPhaser2Child | IPhaser2Grid): Cell<any, any> | undefined {
+  protected getCellByContent(content: ICellChild): Cell<ICellChild> | undefined {
     return this.grid.cells.find(cell => cell.contents.includes(content));
   }
 
@@ -30,7 +36,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
    * @param config Input configuration object. Can be empty, to build with existing configuration
    * @returns {void}
    */
-  public rebuild(config?: IGridConfig): void {
+  public rebuild(config?: ICellConfig): void {
     // saves cells references before destroying grid
     const cells = this.grid.getCells();
 
@@ -46,7 +52,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
    * @param config Input configuration object.
    * @returns {void}
    */
-  protected build(config: IGridConfig): void {
+  protected build(config: ICellConfig): void {
     this._internalBuild(config);
   }
 
@@ -65,14 +71,23 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
     }
 
     this.addChild(child);
+
     child.position.set(0, 0);
+
+    if (cell.scale !== CellScale.None) {
+      child.scale.set(1, 1);
+    }
+
     child.updateTransform();
+
     child instanceof Phaser2Grid ? this._setChildGrid(child, cell) : this._setChild(child, cell);
+
+    this._debug.bringToTop();
 
     return this;
   }
 
-  protected destroyChild(child: IPhaser2Child | IPhaser2Grid, ...destroyArgs: any[]): void {
+  protected destroyChild(child: ICellChild, ...destroyArgs: any[]): void {
     child.destroy(...destroyArgs);
 
     this.removeContent(child);
@@ -98,7 +113,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
     cell.contents.splice(cell.contents.indexOf(child, 1));
   }
 
-  private _setChild(child: IPhaser2Child, cell: Cell<ICellConfig, IPhaser2Child>): this {
+  private _setChild(child: IPhaser2Child, cell: Cell<ICellChild>): this {
     const childArea = child.getBounds();
     let childDimensions = { width: 1, height: 1 };
 
@@ -127,70 +142,25 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
 
     this.addContent(child, cell.name);
 
-    if (this._debugger) {
-      this.bringToTop(this._debugger);
-    }
-
     return this;
   }
 
-  private _setChildGrid(child: IPhaser2Grid, cell: Cell<IGridConfig, IPhaser2Child | IPhaser2Grid>): this {
-    child.scale.set(1, 1);
-
+  private _setChildGrid(child: IPhaser2Grid, cell: Cell<ICellChild>): this {
     const gridConfig = child.getGridConfig();
-    gridConfig.bounds = () => cell.area;
+    gridConfig.bounds = cell.area;
     gridConfig.scale = CellScale.None;
     gridConfig.align = CellAlign.LeftTop;
 
     child.rebuild(gridConfig);
     this.addContent(child, cell.name);
 
-    if (this._debugger) {
-      this.bringToTop(this._debugger);
-    }
-
     return this;
   }
 
-  private _internalBuild(config: IGridConfig): void {
+  private _internalBuild(config: ICellConfig): void {
     this.grid = new Cell(config);
 
-    if (this._debugger) {
-      this._debugger.clear();
-    }
-
-    this._debug(this.grid);
-  }
-
-  private _debug(
-    cell: Cell<ICellConfig | IGridConfig, IPhaser2Child>,
-    lineWidth: number = 10,
-    parentDebug?: { color?: number; fill?: boolean },
-  ): void {
-    const { x: bx, y: by, width: bw, height: bh } = cell.bounds;
-    const { x: px, y: py, width: pw, height: ph } = cell.area;
-    const { debug = parentDebug } = cell.config;
-
-    if (debug) {
-      if (this._debugger === undefined) {
-        // Init debugger
-        this._debugger = new Debugger(this.game);
-        this.add(this._debugger);
-      }
-
-      const { color, fill } = debug;
-
-      // Draw content area
-      fill
-        ? this._debugger.fillRect(px, py, pw, ph, lineWidth * 0.8, color)
-        : this._debugger.strokeRect(px, py, pw, ph, lineWidth * 0.8, color);
-
-      // Draw cell bounds
-      fill
-        ? this._debugger.fillRect(bx, by, bw, bh, lineWidth, color)
-        : this._debugger.strokeRect(bx, by, bw, bh, lineWidth, color);
-    }
-
-    cell.cells.forEach(el => this._debug(el, lineWidth * 0.7, debug));
+    this._debug.clear();
+    this._debug.draw(this.grid);
   }
 }
