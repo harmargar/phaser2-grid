@@ -1,8 +1,8 @@
 // tslint:disable-next-line: no-reference
 /// <reference path="../../node_modules/phaser-ce/typescript/phaser.d.ts" />
 
-import { Phaser2Grid } from '../com/koreez/phaser2grid/Phaser2Grid';
 import './phaser';
+import { Phaser2Grid } from '../com/koreez/phaser2grid/Phaser2Grid';
 
 class TestGrid extends Phaser2Grid {
   getGridConfig() {
