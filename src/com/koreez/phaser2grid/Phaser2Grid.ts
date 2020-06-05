@@ -135,7 +135,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
     };
 
     const pos = align(childDimensions, cell.area, cell.align);
-    child.position.set(pos.x + cell.offset.x, pos.y + cell.offset.y);
+    child.position.set(pos.x, pos.y);
 
     child.x -= ((childArea.x - child.worldPosition.x) / child.worldScale.x) * child.scale.x;
     child.y -= ((childArea.y - child.worldPosition.y) / child.worldScale.y) * child.scale.y;

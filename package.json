@@ -44,6 +44,6 @@
     "lib/**/*"
   ],
   "dependencies": {
-    "@koreez/grid-core": "^2.0.2"
+    "@koreez/grid-core": "^2.0.3"
   }
 }
