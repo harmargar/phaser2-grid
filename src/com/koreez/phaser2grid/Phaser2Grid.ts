@@ -70,7 +70,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
       throw new Error(`No cell found with name ${cellName}`);
     }
 
-    this.addChild(child);
+    this.add(child);
 
     child.position.set(0, 0);
 
