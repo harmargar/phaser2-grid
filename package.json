@@ -1,6 +1,6 @@
 {
   "name": "@koreez/phaser2-grid",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Phaser2 Grid System",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
