@@ -25,10 +25,10 @@ export class MainView extends Phaser2Grid {
 
     // TEST;
     setInterval(() => {
-      this._duckGroup.rotation += 0.01;
+      this._duckGroup.rotation += 0.005;
 
       this.rebuild();
-    }, 10);
+    }, 0);
   }
 
   _buildGroup() {
@@ -57,7 +57,7 @@ export class MainView extends Phaser2Grid {
   _onResize() {
     setTimeout(() => {
       this.rebuild(this.getGridConfig());
-    }, 0);
+    }, 200);
   }
 }
 
@@ -96,12 +96,12 @@ class ChildView extends Phaser2Grid {
 
     // TEST
     setInterval(() => {
-      owl.rotation -= 0.01;
-      parrotGroup.rotation += 0.01;
-      chick.rotation += 0.01;
-      pixel.rotation -= 0.01;
+      owl.rotation -= 0.005;
+      parrotGroup.rotation += 0.005;
+      chick.rotation += 0.005;
+      pixel.rotation -= 0.005;
 
       this.rebuild();
-    }, 10);
+    }, 0);
   }
 }
