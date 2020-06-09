@@ -65,6 +65,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
    */
   protected setChild(cellName: string, child: IPhaser2Child): this {
     this.addChild(child);
+    this._patchChildDestroy(child, cellName);
     this._rebuildContent(cellName, child);
 
     this._debug.bringToTop();
@@ -89,6 +90,15 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
     return this;
   }
 
+  _patchChildDestroy(child: IPhaser2Child, cellName: string) {
+    const childDestroy = child.destroy;
+    child.destroy = (...args: any[]) => {
+      childDestroy.call(child, ...args);
+
+      this._removeContent(child);
+    };
+  }
+
   private _internalBuild(config: ICellConfig): void {
     this.grid = new Cell(config);
 
@@ -103,26 +113,21 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
       throw new Error(`No cell found with name ${cellName}`);
     }
 
-    this._addContent(child, cell.name);
+    this._removeContent(child);
+    this._addContent(child, cell);
     this._resetContent(child, cell);
     this._adjustContent(child, cell);
   }
 
-  protected _addContent(child: any, cellName: any): void {
-    const cell = this.getCellByName(cellName);
-
-    if (cell === undefined) {
-      throw new Error(`No cell found with name ${cellName}`);
-    }
-
+  protected _addContent(child: IPhaser2Child, cell: Cell<ICellChild>): void {
     cell.contents.push(child);
   }
 
-  protected _removeContent(child: any, cellName?: any): void {
-    const cell = cellName ? this.getCellByName(cellName) : this.getCellByContent(child);
+  protected _removeContent(child: IPhaser2Child): void {
+    const cell = this.getCellByContent(child);
 
     if (cell === undefined) {
-      throw new Error(`No cell found with name ${cellName}`);
+      return;
     }
 
     cell.contents.splice(cell.contents.indexOf(child, 1));
