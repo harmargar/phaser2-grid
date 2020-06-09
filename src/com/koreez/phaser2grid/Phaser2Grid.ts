@@ -1,4 +1,4 @@
-import { align, Cell, CellAlign, CellScale, fit, ICellConfig } from '@koreez/grid-core';
+import { align, Cell, CellScale, fit, ICellConfig } from '@koreez/grid-core';
 import { Debug } from './Debugger';
 import { ICellChild, IPhaser2Child, IPhaser2Grid } from './Types';
 
@@ -135,8 +135,6 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
   private _adjustGridChild(child: IPhaser2Grid, cell: Cell<ICellChild>): void {
     const gridConfig = child.getGridConfig();
     gridConfig.bounds = cell.area;
-    gridConfig.scale = CellScale.None;
-    gridConfig.align = CellAlign.LeftTop;
 
     child.rebuild(gridConfig);
   }
