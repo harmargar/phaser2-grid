@@ -1,5 +1,5 @@
 import { Cell, IDebug } from '@koreez/grid-core';
-import { ICellChild } from './Types';
+import { IContent } from './Types';
 
 export class Debug {
   private _debugger!: Debugger;
@@ -17,7 +17,7 @@ export class Debug {
     this._parent.bringToTop(this._debugger);
   }
 
-  public draw(cell: Cell<ICellChild>, lineWidth: number = 10, parentDebug?: IDebug): void {
+  public draw(cell: Cell<IContent>, lineWidth: number = 10, parentDebug?: IDebug): void {
     const { x: bx, y: by, width: bw, height: bh } = cell.bounds;
     const { x: px, y: py, width: pw, height: ph } = cell.area;
     const { debug = parentDebug } = cell.config;

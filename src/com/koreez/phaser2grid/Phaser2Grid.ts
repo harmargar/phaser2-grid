@@ -1,11 +1,12 @@
 import { align, Cell, CellScale, fit, ICellConfig } from '@koreez/grid-core';
+import { Rect } from '@koreez/grid-core/lib/utils/geom/Rect';
 import { Debug } from './Debugger';
-import { ICellChild, IPhaser2Child, IPhaser2Grid } from './Types';
+import { IContent, IPhaser2Child, IPhaser2Grid } from './Types';
 
 export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
   public abstract getGridConfig(): ICellConfig;
 
-  protected grid!: Cell<ICellChild>;
+  protected grid!: Cell<IContent>;
 
   private _debug!: Debug;
 
@@ -19,7 +20,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
     return this.grid.getCellByName(name);
   }
 
-  protected getCellByContent(content: ICellChild): Cell<ICellChild> | undefined {
+  protected getCellByContent(content: IContent): Cell<IContent> | undefined {
     return this.grid.getCells().find(cell => cell.contents.includes(content));
   }
 
@@ -106,7 +107,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
     this._debug.draw(this.grid);
   }
 
-  private _rebuildContent(cellName: string, child: IPhaser2Grid | IPhaser2Child): void {
+  private _rebuildContent(cellName: string, child: IContent): void {
     const cell = this.grid.getCellByName(cellName);
 
     if (cell === undefined) {
@@ -119,7 +120,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
     this._adjustContent(child, cell);
   }
 
-  protected _addContent(child: IPhaser2Child, cell: Cell<ICellChild>): void {
+  protected _addContent(child: IPhaser2Child, cell: Cell<IContent>): void {
     cell.contents.push(child);
   }
 
@@ -133,46 +134,60 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
     cell.contents.splice(cell.contents.indexOf(child, 1));
   }
 
-  private _adjustContent(child: IPhaser2Grid | IPhaser2Child, cell: Cell<ICellChild>): void {
+  private _adjustContent(child: IContent, cell: Cell<IContent>): void {
     child instanceof Phaser2Grid ? this._adjustGridChild(child, cell) : this._adjustChild(child, cell);
   }
 
-  private _adjustGridChild(child: IPhaser2Grid, cell: Cell<ICellChild>): void {
+  private _adjustGridChild(child: IPhaser2Grid, cell: Cell<IContent>): void {
     const gridConfig = child.getGridConfig();
     gridConfig.bounds = cell.area;
 
     child.rebuild(gridConfig);
   }
 
-  private _adjustChild(child: IPhaser2Child, cell: Cell<ICellChild>): void {
-    const childArea = child.getBounds();
-    let childDimensions = { width: 1, height: 1 };
+  private _adjustChild(child: IPhaser2Child, cell: Cell<IContent>): void {
+    const childBounds = child.getBounds();
 
-    // SCALE
-    if (cell.scale !== CellScale.None) {
-      childDimensions = {
-        height: childArea.height / child.worldScale.y,
-        width: childArea.width / child.worldScale.x,
-      };
+    this._scaleContent(child, cell, childBounds);
+    this._positionContent(child, cell, childBounds);
+  }
 
-      const scale = fit(childDimensions, cell.area, cell.scale);
-      child.scale.set(scale.x, scale.y);
+  private _scaleContent(child: IPhaser2Child, cell: Cell<IContent>, childBounds: Rect): void {
+    switch (cell.scale) {
+      case CellScale.None:
+        break;
+      case CellScale.Custom:
+        if (!child.resize) {
+          throw new Error('resize() function does not implemented');
+        }
+
+        child.resize(cell.area.width, cell.area.height);
+        break;
+      default:
+        const childDimensions = {
+          height: childBounds.height / child.worldScale.y,
+          width: childBounds.width / child.worldScale.x,
+        };
+
+        const scale = fit(childDimensions, cell.area, cell.scale);
+        child.scale.set(scale.x, scale.y);
     }
+  }
 
-    // POSITION
-    childDimensions = {
-      height: (childArea.height / child.worldScale.y) * child.scale.y,
-      width: (childArea.width / child.worldScale.x) * child.scale.x,
+  private _positionContent(child: IPhaser2Child, cell: Cell<IContent>, childBounds: Rect): void {
+    const childDimensions = {
+      height: (childBounds.height / child.worldScale.y) * child.scale.y,
+      width: (childBounds.width / child.worldScale.x) * child.scale.x,
     };
 
     const pos = align(childDimensions, cell.area, cell.align);
     child.position.set(pos.x, pos.y);
 
-    child.x -= ((childArea.x - child.worldPosition.x) / child.worldScale.x) * child.scale.x;
-    child.y -= ((childArea.y - child.worldPosition.y) / child.worldScale.y) * child.scale.y;
+    child.x -= ((childBounds.x - child.worldPosition.x) / child.worldScale.x) * child.scale.x;
+    child.y -= ((childBounds.y - child.worldPosition.y) / child.worldScale.y) * child.scale.y;
   }
 
-  private _resetContent(child: IPhaser2Child, cell: Cell<ICellChild>): void {
+  private _resetContent(child: IPhaser2Child, cell: Cell<IContent>): void {
     child.position.set(0, 0);
 
     if (cell.scale !== CellScale.None) {
