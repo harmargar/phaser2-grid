@@ -131,7 +131,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
       return;
     }
 
-    cell.contents.splice(cell.contents.indexOf(child, 1));
+    cell.contents.splice(cell.contents.indexOf(child), 1);
   }
 
   private _adjustContent(child: IContent, cell: Cell<IContent>): void {
