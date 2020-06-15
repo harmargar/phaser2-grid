@@ -94,12 +94,6 @@ class ChildView extends Phaser2Grid {
     this.setChild('child_3', chick);
     this.setChild('child_4', pixel);
 
-    setTimeout(() => {
-      const mainCell = this.getCellByName('child_1');
-      console.warn(mainCell?.area);
-      this.rebuild();
-    }, 1000);
-
     // TEST
     setInterval(() => {
       owl.rotation -= 0.005;
