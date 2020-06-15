@@ -52,29 +52,29 @@ function getMainViewGridLandscapeConfig(): ICellConfig {
 
 export function getChildViewGridConfig(): ICellConfig {
   return {
-    name: 'ui',
+    name: 'child',
     debug: { color: 0xd62b19 },
     cells: [
       {
-        name: 'ui_1',
+        name: 'child_1',
         debug: { color: 0xa16639, fill: true },
-        bounds: { x: 0, y: 0, height: 0.25 },
+        bounds: { x: 0, height: 0.25 },
         align: CellAlign.LeftTop,
         padding: 0.1,
       },
       {
-        name: 'ui_2',
-        bounds: { x: 0, y: 0.25, height: 0.25 },
+        name: 'child_2',
+        bounds: { x: 0, height: 0.25 },
       },
       {
-        name: 'ui_3',
-        bounds: { x: 0, y: 0.5, height: 0.25 },
+        name: 'child_3',
+        bounds: { x: 0, height: 0.25 },
         align: CellAlign.RightBottom,
       },
       {
-        name: 'ui_4',
+        name: 'child_4',
         debug: { color: 0xffffff },
-        bounds: { x: 0 },
+        bounds: { x: 0, height: '100' },
         padding: 0.2,
         scale: CellScale.ShowAll,
       },

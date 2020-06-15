@@ -89,10 +89,16 @@ class ChildView extends Phaser2Grid {
     const chick = this.game.make.sprite(0, 0, 'chick');
     const pixel = this.game.make.sprite(0, 0, 'pixel');
 
-    this.setChild('ui_1', owl);
-    this.setChild('ui_2', parrotGroup);
-    this.setChild('ui_3', chick);
-    this.setChild('ui_4', pixel);
+    this.setChild('child_1', owl);
+    this.setChild('child_2', parrotGroup);
+    this.setChild('child_3', chick);
+    this.setChild('child_4', pixel);
+
+    setTimeout(() => {
+      const mainCell = this.getCellByName('child_1');
+      console.warn(mainCell?.area);
+      this.rebuild();
+    }, 1000);
 
     // TEST
     setInterval(() => {

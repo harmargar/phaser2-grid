@@ -21,15 +21,7 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
   }
 
   protected getCellByContent(content: IContent): Cell<IContent> | undefined {
-    return this.grid.getCells().find(cell => cell.contents.includes(content));
-  }
-
-  protected getCellBoundsByName(name: string) {
-    return this.getCellByName(name)?.bounds;
-  }
-
-  protected getCellAreaByName(name: string) {
-    return this.getCellByName(name)?.area;
+    return this.grid.getCellByContent(content);
   }
 
   /**
