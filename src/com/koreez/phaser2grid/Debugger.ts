@@ -51,14 +51,7 @@ export class Debug {
     this._debugger.clear();
   }
 
-  public strokeRect(
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    lineWidth: number,
-    color: number = Debugger.DEFAULT_COLOR,
-  ): void {
+  public strokeRect(x: number, y: number, w: number, h: number, lineWidth: number, color: number): void {
     if (!this._debugger) {
       return;
     }
@@ -66,14 +59,7 @@ export class Debug {
     this._debugger.fillRect(x, y, w, h, lineWidth, color);
   }
 
-  public fillRect(
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    lineWidth: number,
-    color: number = Debugger.DEFAULT_COLOR,
-  ): void {
+  public fillRect(x: number, y: number, w: number, h: number, lineWidth: number, color: number): void {
     if (!this._debugger) {
       return;
     }

@@ -157,8 +157,8 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
         break;
       default:
         const childDimensions = {
-          height: childBounds.height / child.worldScale.y,
           width: childBounds.width / child.worldScale.x,
+          height: childBounds.height / child.worldScale.y,
         };
 
         const scale = fit(childDimensions, cell.area, cell.scale);
@@ -168,15 +168,15 @@ export abstract class Phaser2Grid extends Phaser.Group implements IPhaser2Grid {
 
   private _positionContent(child: IPhaser2Child, cell: Cell<IContent>, childBounds: Rect): void {
     const childDimensions = {
-      height: (childBounds.height / child.worldScale.y) * child.scale.y,
       width: (childBounds.width / child.worldScale.x) * child.scale.x,
+      height: (childBounds.height / child.worldScale.y) * child.scale.y,
     };
 
     const pos = align(childDimensions, cell.area, cell.align);
     child.position.set(pos.x, pos.y);
 
-    child.x -= ((childBounds.x - child.worldPosition.x) / child.worldScale.x) * child.scale.x;
-    child.y -= ((childBounds.y - child.worldPosition.y) / child.worldScale.y) * child.scale.y;
+    child.x -= (childBounds.x / child.worldScale.x) * child.scale.x;
+    child.y -= (childBounds.y / child.worldScale.y) * child.scale.y;
   }
 
   private _resetContent(child: IPhaser2Child, cell: Cell<IContent>): void {
